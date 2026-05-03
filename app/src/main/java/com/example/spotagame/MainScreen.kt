@@ -3,7 +3,13 @@ package com.example.spotagame
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.List
+import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.filled.List
+import androidx.compose.material.icons.filled.LocationOn
+import androidx.compose.material.icons.filled.Person
 import androidx.compose.material.icons.filled.ThumbUp
+import androidx.compose.material3.Icon
 import androidx.compose.material3.NavigationBar
 import androidx.compose.material3.NavigationBarDefaults
 import androidx.compose.material3.NavigationBarItem
@@ -23,13 +29,16 @@ import com.example.spotagame.ui.ProfileScreen
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.navigation.NavGraph.Companion.findStartDestination
 
-enum class SpotGameScreen {
-    Map,
-    CreateEvent,
-    EventDetails,
-    ProfileDetails
+enum class SpotGameScreen(
+    val icon: ImageVector
+) {
+    Map(icon = Icons.Default.LocationOn),
+    CreateEvent(icon = Icons.Default.Add),
+    EventDetails(icon = Icons.AutoMirrored.Filled.List),
+    ProfileDetails(icon = Icons.Default.Person)
 }
 
 @Composable
@@ -37,14 +46,14 @@ fun SpotAGameApp(
     navController: NavHostController = rememberNavController()
 ) {
     val navBackStackEntry by navController.currentBackStackEntryAsState()
-    val currentRoute by rememberSaveable { mutableIntStateOf(SpotGameScreen.Map.ordinal) }
+    val currentRoute = navBackStackEntry?.destination?.route
 
     Scaffold(
         bottomBar = {
             NavigationBar(windowInsets = NavigationBarDefaults.windowInsets) {
                 SpotGameScreen.entries.forEachIndexed { index, destination ->
                     NavigationBarItem(
-                        selected = currentRoute == index,
+                        selected = currentRoute == destination.name,
                         onClick = {
                             navController.navigate(route = destination.name) {
                                 popUpTo(navController.graph.findStartDestination().id) {
@@ -54,7 +63,7 @@ fun SpotAGameApp(
                                 restoreState = true
                             }
                         },
-                        icon = {Icons.Default.ThumbUp},
+                        icon = {Icon(destination.icon, contentDescription = destination.name)},
                         label = { Text(destination.name) }
                     )
                 }
