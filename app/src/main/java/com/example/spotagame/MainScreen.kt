@@ -27,7 +27,7 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
-import com.example.spotagame.ui.CreateEventScreen
+import com.example.spotagame.ui.createEvent.CreateEventScreen
 import com.example.spotagame.ui.EventDetailsScreen
 import com.example.spotagame.ui.LoginScreen
 import com.example.spotagame.ui.MapScreen

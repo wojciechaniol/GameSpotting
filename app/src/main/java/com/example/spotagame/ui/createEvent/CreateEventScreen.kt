@@ -1,4 +1,4 @@
-package com.example.spotagame.ui
+package com.example.spotagame.ui.createEvent
 
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
