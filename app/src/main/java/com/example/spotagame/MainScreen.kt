@@ -27,12 +27,14 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
+import com.example.spotagame.data.EventLocation
 import com.example.spotagame.ui.createEvent.CreateEventScreen
 import com.example.spotagame.ui.EventDetailsScreen
 import com.example.spotagame.ui.LoginScreen
 import com.example.spotagame.ui.MapScreen
 import com.example.spotagame.ui.ProfileScreen
 import com.example.spotagame.ui.RegisterScreen
+import com.example.spotagame.ui.createEvent.LocationPickerScreen
 
 enum class SpotGameScreen(val icon: ImageVector) {
     Map(icon = Icons.Default.LocationOn),
@@ -42,6 +44,7 @@ enum class SpotGameScreen(val icon: ImageVector) {
 }
 
 private val AUTH_ROUTES = setOf("login", "register")
+private const val LOCATION_PICKER_ROUTE = "location_picker"
 
 @Composable
 fun SpotAGameApp(
@@ -52,7 +55,9 @@ fun SpotAGameApp(
     val navBackStackEntry by navController.currentBackStackEntryAsState()
     val currentRoute = navBackStackEntry?.destination?.route
 
-    val showBottomBar = currentRoute != null && currentRoute !in AUTH_ROUTES
+    val showBottomBar = currentRoute != null
+            && currentRoute !in AUTH_ROUTES
+            && currentRoute !in LOCATION_PICKER_ROUTE
 
     // Navigate whenever auth state changes: login → map, logout → login
     LaunchedEffect(user) {
@@ -114,8 +119,25 @@ fun SpotAGameApp(
             composable(SpotGameScreen.Map.name) {
                 MapScreen(modifier = Modifier.fillMaxSize())
             }
-            composable(SpotGameScreen.CreateEvent.name) {
-                CreateEventScreen(modifier = Modifier.fillMaxSize())
+            composable(SpotGameScreen.CreateEvent.name) { backStackEntry ->
+                val pickedLocation = backStackEntry
+                    .savedStateHandle
+                    .get<EventLocation>("picked_location")
+                CreateEventScreen(
+                    onPickLocation = { navController.navigate(LOCATION_PICKER_ROUTE) },
+                    pickedLocation = pickedLocation
+                )
+            }
+            composable(LOCATION_PICKER_ROUTE) {
+                LocationPickerScreen(
+                    onLocationConfirmed = { location ->
+                        navController.previousBackStackEntry
+                            ?.savedStateHandle
+                            ?.set("picked_location", location)
+                        navController.popBackStack()
+                    },
+                    onBack = { navController.popBackStack() }
+                )
             }
             composable(SpotGameScreen.EventDetails.name) {
                 EventDetailsScreen(modifier = Modifier.fillMaxSize())

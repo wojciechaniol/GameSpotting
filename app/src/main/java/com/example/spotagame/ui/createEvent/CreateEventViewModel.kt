@@ -110,7 +110,6 @@ class CreateEventViewModel : ViewModel() {
         viewModelScope.launch {
             try {
                 val uid  = Firebase.auth.currentUser?.uid ?: return@launch
-                val user = Firebase.auth.currentUser!!
 
                 val event = Event(
                     title = validated.title.trim(),
