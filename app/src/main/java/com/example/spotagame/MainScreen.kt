@@ -29,6 +29,7 @@ import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import com.example.spotagame.ui.CreateEventScreen
 import com.example.spotagame.ui.EventDetailsScreen
+import com.example.spotagame.ui.LocationPickerScreen
 import com.example.spotagame.ui.LoginScreen
 import com.example.spotagame.ui.MapScreen
 import com.example.spotagame.ui.ProfileScreen
@@ -52,7 +53,7 @@ fun SpotAGameApp(
     val navBackStackEntry by navController.currentBackStackEntryAsState()
     val currentRoute = navBackStackEntry?.destination?.route
 
-    val showBottomBar = currentRoute != null && currentRoute !in AUTH_ROUTES
+    val showBottomBar = SpotGameScreen.entries.any { it.name == currentRoute }
 
     // Navigate whenever auth state changes: login → map, logout → login
     LaunchedEffect(user) {
@@ -115,7 +116,13 @@ fun SpotAGameApp(
                 MapScreen(modifier = Modifier.fillMaxSize())
             }
             composable(SpotGameScreen.CreateEvent.name) {
-                CreateEventScreen(modifier = Modifier.fillMaxSize())
+                CreateEventScreen(
+                    navController = navController,
+                    modifier = Modifier.fillMaxSize()
+                )
+            }
+            composable("location_picker") {
+                LocationPickerScreen(navController = navController)
             }
             composable(SpotGameScreen.EventDetails.name) {
                 EventDetailsScreen(modifier = Modifier.fillMaxSize())
